@@ -1,4 +1,4 @@
-from flask import Flask, redirect, jsonify
+from flask import Flask, redirect, jsonify, request
 from flasgger import Swagger
 import logging
 from .config import cfg
@@ -72,7 +72,7 @@ def clusterconfig(role: str):
 
 
 @web.route("/config")
-def config():
+def get_config():
     """Returns current configuration
     ---
     responses:
@@ -84,7 +84,7 @@ def config():
 
 
 @web.route("/config/defaults")
-def defaults():
+def get_defaults():
     """Returns current defaults
     ---
     responses:
@@ -94,8 +94,8 @@ def defaults():
     return cfg.defaults, 200
 
 
-@web.route("/config/mapping/")
-def mapping():
+@web.route("/config/mapping/", methods=["GET"])
+def get_mapping():
     """Returns current mapping mac-address / configuration
     ---
     responses:
@@ -103,3 +103,18 @@ def mapping():
         description: Return the json with current mappings
     """
     return cfg.mapping, 200
+
+
+@web.route("/config/mapping/<string:macaddress>", methods=["POST"])
+def set_mapping(macaddress: str):
+    """Add/edit mapping mac-address / configuration
+    ---
+    responses:
+      201:
+        description: Configuration saved
+      400:
+        description: Configuration given is invalid
+    """
+    data = request.json
+    cfg.mapping[macaddress] = data
+    return "", 201

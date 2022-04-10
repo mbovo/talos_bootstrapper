@@ -27,6 +27,20 @@ class Config(object):
             return False
         return True
 
+    def toFile(self, filename: str) -> bool:
+        if filename is None:
+            return False
+        try:
+            with open(filename) as c:
+                self.lock.acquire()
+                m = self.__map
+                yaml.safe_dump(m, c)
+                self.lock.release()
+        except (ValueError, TypeError, FileNotFoundError) as e:
+            logging.error(f"error {e}")
+            return False
+        return True
+
     def __iter__(self):
         for p in self.__map:
             yield p
