@@ -1,4 +1,3 @@
-import io
 from porcupine import cli
 from click import testing
 import pkg_resources

@@ -1,4 +1,3 @@
-import sys
 import signal
 import click
 import pkg_resources
@@ -37,6 +36,9 @@ def version():
 @click.option("-l", "--listen", "listen_address", envvar="LISTEN_ADDRESS", default="0.0.0.0", help="Listen address (0.0.0.0)")
 @click.option("-p", "--port", "listen_port", envvar="LISTEN_PORT", default="5000", help="Listen port (5000)")
 def start(**args):
+
+    cfg.add("mapping", {})
+    cfg.add("defaults", {})
 
     cfg.fromFile(args["config_file"])
     for k, w in args.items():
