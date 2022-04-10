@@ -48,11 +48,7 @@ def bootstrap(macaddress: str):
       400:
         description: Block pxe booting process
     """
-    rc = 200
-    ret = parse_mac(macaddress)
-    if ret is None:
-        return None, 400
-
+    ret, rc = parse_mac(macaddress)
     return jsonify(ret), rc
 
 
