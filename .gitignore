@@ -1,0 +1,10 @@
+dist/*
+*.pytest_cache
+.venv
+.vscode
+*.egg-info
+.coverage
+*__pycache__
+.task/*
+old/
+config.yaml

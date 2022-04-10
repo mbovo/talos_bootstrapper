@@ -1,0 +1,33 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-symlinks
+  - repo: https://github.com/psf/black
+    rev: "22.3.0"
+    hooks:
+      - id: black
+
+  # - repo: https://gitlab.com/pycqa/flake8
+  #   rev: 3.9.2
+  #   hooks:
+  #     - id: flake8
+  #       args:
+  #         - --count
+  #         - --select=E9,F63,F7,F82
+  #         - --show-source
+  #         - --statistics
+  #         - --ignore=E203
+  #     - id: flake8
+  #       args:
+  #         - --count
+  #         - --max-complexity=10
+  #         - --max-line-length=150
+  #         - --statistics
+  #         - --ignore=E203,C901,E731,E501

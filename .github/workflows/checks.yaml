@@ -1,0 +1,32 @@
+name: Sanity Checks
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+jobs:
+  pre-flight:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v3
+    - uses: pre-commit/action@v2.0.3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    runs-on: self-hosted
+    needs:
+      - pre-flight
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - uses: arduino/setup-task@v1
+      - name: Setup env
+        run: |
+          task setup
+      - name: Python tests
+        run: |
+          source .venv/bin/activate
+          task build
+          task test
