@@ -49,7 +49,7 @@ def start(**args):
 
     if cfg.api_key is None:
         cfg.api_key = "".join(random.choice(string.ascii_letters + string.digits) for i in range(48))
-        logging.warning(f"No API_KEY given, new one was generated: {cfg.api_key}")
+        logging.warning(f"No API_KEY given, new one generated: {cfg.api_key}")
 
     server.run()
 
