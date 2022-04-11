@@ -6,7 +6,7 @@ import random
 import string
 
 from . import server, common
-from .config import cfg
+from .config import cfg, fromFile
 
 VERSION = pkg_resources.get_distribution("porcupine").version
 
@@ -37,15 +37,17 @@ def version():
 @click.option("-p", "--port", "listen_port", envvar="LISTEN_PORT", default="5000", help="Listen port (5000)")
 def start(**args):
 
-    cfg.add("mapping", {})
-    cfg.add("defaults", {})
+    if not fromFile(args["config_file"]):
+        exit(1)
 
-    cfg.fromFile(args["config_file"])
-    for k, w in args.items():
-        if k not in cfg:
-            cfg.add(k, w)
+    if not cfg.listen_address:
+        cfg.listen_address = args["listen_address"]
+    if not cfg.listen_port:
+        cfg.listen_port = args["listen_port"]
+    if not cfg.config_file:
+        cfg.config_file = args["config_file"]
 
-    logging.debug(f"Loaded config: {cfg}")
+    logging.info(f"Loaded config: {cfg}")
 
     if cfg.api_key is None:
         cfg.api_key = "".join(random.choice(string.ascii_letters + string.digits) for i in range(48))

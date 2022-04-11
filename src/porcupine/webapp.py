@@ -1,10 +1,8 @@
 import logging
-from .config import cfg
+from .config import cfg, MacEntry
 from .common import parse_mac
 from fastapi import FastAPI
 from fastapi.responses import PlainTextResponse
-
-# from pydantic import BaseModel
 
 web = FastAPI()
 logger = logging.getLogger("webapp")
@@ -35,8 +33,7 @@ def clusterconfig(role: str):
 
 @web.get("/config")
 def get_config():
-    m = {k: cfg[k] for k in cfg}
-    return m
+    return cfg
 
 
 @web.get("/config/defaults")
@@ -49,11 +46,9 @@ def get_mapping():
     return cfg.mapping, 200
 
 
-# class Mappings(BaseModel):
-
-
 @web.post("/config/mapping/{macaddress}")
-def set_mapping(macaddress: str):
-    pass
-    # cfg.mapping[macaddress] = data
-    # return "", 201
+def set_mapping(macaddress: str, mapping: MacEntry):
+
+    cfg.mapping[macaddress] = mapping
+
+    return cfg.mapping[macaddress]
