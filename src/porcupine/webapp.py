@@ -1,54 +1,61 @@
 import logging
-from .config import cfg, MacEntry
-from .common import parse_mac
-from fastapi import FastAPI
+from typing import Dict, Optional
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import PlainTextResponse
+from .config import cfg, MacEntry, Defaults, Settings
+from .logic import parse_mac
 
-web = FastAPI()
+app = FastAPI()
 logger = logging.getLogger("webapp")
 
 
-@web.get("/")
+@app.get("/")
 def root():
     return {"health": "ok"}
 
 
-@web.get("/health")
-@web.head("/health")
+@app.get("/health")
+@app.head("/health")
 def health():
     return {"status": "OK"}
 
 
-@web.get("/v1/boot/{macaddress}")
+@app.get("/v1/boot/{macaddress}")
 def bootstrap(macaddress: str):
-    ret, _ = parse_mac(macaddress)
-    return ret
+    try:
+        return parse_mac(macaddress)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
-@web.get("/v1/cluster/{role}", response_class=PlainTextResponse)
+@app.get("/v1/cluster/{role}", response_class=PlainTextResponse)
 def clusterconfig(role: str):
     data = "this is a big config file"
     return data
 
 
-@web.get("/config")
-def get_config():
-    return cfg
+@app.get("/config", response_model=Settings)
+def get_config(apikey: str):
+    if apikey != cfg.settings.api_key:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return cfg.settings
 
 
-@web.get("/config/defaults")
+@app.get("/config/defaults", response_model=Defaults)
 def get_defaults():
-    return cfg.defaults, 200
+    return cfg.settings.defaults
 
 
-@web.get("/config/mapping")
+@app.get("/config/mapping", response_model=Optional[Dict[str, MacEntry]])
 def get_mapping():
-    return cfg.mapping, 200
+    return cfg.settings.mapping
 
 
-@web.post("/config/mapping/{macaddress}")
-def set_mapping(macaddress: str, mapping: MacEntry):
+@app.post("/config/mapping/{macaddress}")
+def set_mapping(macaddress: str, apikey: str, mapping: MacEntry):
+    if apikey != cfg.settings.api_key:
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
-    cfg.mapping[macaddress] = mapping
+    cfg.settings.mapping[macaddress] = mapping
 
-    return cfg.mapping[macaddress]
+    return cfg.settings.mapping[macaddress]

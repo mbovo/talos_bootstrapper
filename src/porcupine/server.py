@@ -4,7 +4,7 @@ import logging
 
 # from gevent.pywsgi import WSGIServer
 
-from .webapp import web
+from .webapp import app
 from .config import cfg
 
 from uvicorn import Server, Config, config as uvicorn_config
@@ -45,7 +45,7 @@ def webapp_run():
     try:
         uvicorn_log_config = uvicorn_config.LOGGING_CONFIG
         del uvicorn_log_config["loggers"]
-        wsgi = Server(Config(web, host=cfg.listen_address, port=int(cfg.listen_port), log_config=uvicorn_log_config)).run()
+        wsgi = Server(Config(app, host=cfg.settings.listen_address, port=int(cfg.settings.listen_port), log_config=uvicorn_log_config)).run()
     except Exception as e:
         logging.error(f"Cannot start web server: {e}")
 

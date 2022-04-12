@@ -1,115 +1,102 @@
 import logging
-import yaml
-import json
-from pydantic import BaseModel, BaseSettings, IPvAnyAddress, IPvAnyNetwork, FilePath
+import threading
+from pydantic import IPvAnyAddress, IPvAnyNetwork, FilePath
 from typing import List, Dict, Optional
+from pydantic_yaml import YamlModel
 
-# class Config(object):
-#     __map: dict()
-
-#     def __init__(self) -> None:
-#         self.__map
-#         self.lock = threading.Lock()
-
-#     def fromFile(self, filename: str) -> bool:
-#         if filename is None:
-#             return False
-#         try:
-#             with open(filename) as c:
-#                 validyaml = yaml.safe_load(c)
-#                 self.lock.acquire()
-#                 self.__map = validyaml
-#                 self.lock.release()
-#         except (ValueError, TypeError, FileNotFoundError) as e:
-#             logging.error(f"exception {e}")
-#             return False
-#         return True
-
-#     def toFile(self, filename: str) -> bool:
-#         if filename is None:
-#             return False
-#         try:
-#             with open(filename) as c:
-#                 self.lock.acquire()
-#                 m = self.__map
-#                 yaml.safe_dump(m, c)
-#                 self.lock.release()
-#         except (ValueError, TypeError, FileNotFoundError) as e:
-#             logging.error(f"error {e}")
-#             return False
-#         return True
-
-#     def __iter__(self):
-#         for p in self.__map:
-#             yield p
-
-#     def __str__(self) -> str:
-#         return str(self.__map)
-
-#     def __getitem__(self, item):
-#         if item not in self.__map:
-#             raise KeyError
-#         return dot.dotify(self.__map[item])
-
-#     def __getattr__(self, item):
-#         if item in self.__map:
-#             return self.__map[item]
-
-#     def add(self, item, value):
-#         try:
-#             self.lock.acquire()
-#             self.__map[item] = value
-#         except (ValueError, TypeError) as e:
-#             logging.error(f"Cannot add {item}={value}:  {e}")
-#             return False
-#         finally:
-#             self.lock.release()
+# Models
 
 
-class Defaults(BaseModel):
-    kernel: str = ...
-    initrd: List[str] = ...
+class BootSection(YamlModel):
+    kernel: str
+    initrd: List[str]
     message: Optional[str]
     cmdline: Optional[str]
+
+
+class NetworkSection(YamlModel):
+    dhcp: bool
     server: Optional[IPvAnyAddress]
     gateway: Optional[IPvAnyAddress]
     netmask: Optional[IPvAnyNetwork]
     dns: Optional[IPvAnyAddress]
     ntp: Optional[IPvAnyAddress]
-
-
-class MacEntry(BaseModel):
-    dhcp: bool
     ip: Optional[IPvAnyAddress]
     hostname: Optional[str]
     device: Optional[str]
+
+
+class Defaults(YamlModel):
+    boot: BootSection
+    net: NetworkSection
+    deny_unknown_clients: bool
+    role: str
+
+
+class MacEntry(YamlModel):
+    boot: Optional[BootSection]
+    net: Optional[NetworkSection]
     role: Optional[str]
 
 
-class Settings(BaseSettings):
+class Settings(YamlModel):
     api_key: Optional[str]
     listen_address: Optional[str]
     listen_port: Optional[int]
+    external_url: Optional[str]
     config_file: Optional[FilePath]
     defaults: Defaults
     mapping: Optional[Dict[str, MacEntry]]
 
-    class Config:
-        env_prefix = "porcupine_"
+
+# Global config, wraps Settings model
 
 
-def fromFile(filename: str) -> bool:
-    if filename is None:
-        return False
-    try:
-        with open(filename) as c:
-            v = yaml.safe_load(c)
-            j = json.dumps(v)
-            cfg.parse_raw(j)
-    except Exception as e:
-        logging.error(f"exception {e}")
-        return False
-    return True
+class Config(object):
+    settings: Settings
+    cache: dict()
+    __lock: threading.Lock
+
+    def __init__(self) -> None:
+        self.settings: Settings = Settings(
+            defaults=Defaults(boot=BootSection(kernel="", initrd=[""]), net=NetworkSection(dhcp=True), deny_unknown_clients=False, role="worker"), mapping={}
+        )
+        self.cache = dict()
+        self.__lock = threading.Lock()
+
+    def fromFile(self, filename: str) -> bool:
+        try:
+            self.__lock.acquire()
+            self.settings = Settings.parse_file(filename, proto="yaml")
+        except Exception as e:
+            logging.error(f"exception {e}")
+            return False
+        finally:
+            self.__lock.release()
+        return True
+
+    def toFile(self, filename: str) -> bool:
+        if filename is None:
+            return False
+        try:
+            with open(filename) as c:
+                self.__lock.acquire()
+                c.write(self.settings.yaml())
+        except Exception as e:
+            logging.error(f"error {e}")
+            return False
+        finally:
+            self.__lock.release()
+        return True
+
+    def __iter__(self):
+        yield from self.settings.dict()
+
+    def __str__(self) -> str:
+        return self.settings.__str__()
+
+    def __repr__(self) -> str:
+        return self.settings.__repr__()
 
 
-cfg = Settings(defaults=Defaults(kernel="", initrd=[""]), mapping={})  # Config(defaults=Defaults(kernel="",initrd=[""]))
+cfg = Config()

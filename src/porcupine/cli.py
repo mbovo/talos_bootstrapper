@@ -2,11 +2,10 @@ import signal
 import click
 import pkg_resources
 import logging
-import random
-import string
+import uuid
 
 from . import server, common
-from .config import cfg, fromFile
+from .config import cfg
 
 VERSION = pkg_resources.get_distribution("porcupine").version
 
@@ -35,23 +34,30 @@ def version():
 )
 @click.option("-l", "--listen", "listen_address", envvar="LISTEN_ADDRESS", default="0.0.0.0", help="Listen address (0.0.0.0)")
 @click.option("-p", "--port", "listen_port", envvar="LISTEN_PORT", default="5000", help="Listen port (5000)")
+@click.option("-e", "--externalurl", "external_url", envvar="EXTERNAL_URL", default=None, help="URL from external standpoint (default: http://IPADDR:PORT)")
 def start(**args):
 
-    if not fromFile(args["config_file"]):
+    if not cfg.fromFile(args["config_file"]):
         exit(1)
 
-    if not cfg.listen_address:
-        cfg.listen_address = args["listen_address"]
-    if not cfg.listen_port:
-        cfg.listen_port = args["listen_port"]
-    if not cfg.config_file:
-        cfg.config_file = args["config_file"]
+    if not cfg.settings.listen_address:
+        cfg.settings.listen_address = args["listen_address"]
+    if not cfg.settings.listen_port:
+        cfg.settings.listen_port = args["listen_port"]
+    if not cfg.settings.config_file:
+        cfg.settings.config_file = args["config_file"]
+    if not cfg.settings.external_url:
+        cfg.settings.external_url = args["external_url"]
+
+    if cfg.settings.external_url is None:
+        cfg.settings.external_url = f"http://{common.get_hostname()}:{cfg.settings.listen_port}"
+
+    if cfg.settings.api_key is None:
+        cfg.settings.api_key = str(uuid.uuid4())
+        logging.warning(f"No API_KEY given, new one generated: {cfg.settings.api_key}")
+        logging.warning("To avoid this message on start add your `api_key: yourstring` to config.yaml file")
 
     logging.info(f"Loaded config: {cfg}")
-
-    if cfg.api_key is None:
-        cfg.api_key = "".join(random.choice(string.ascii_letters + string.digits) for i in range(48))
-        logging.warning(f"No API_KEY given, new one generated: {cfg.api_key}")
 
     server.run()
 

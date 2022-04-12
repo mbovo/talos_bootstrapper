@@ -17,3 +17,9 @@ def test_main_version():
     result = runner.invoke(cli.main, "version")
     assert result.exit_code == 0
     assert result.stdout == f"Porcupine - Talos Linux bootstrapper v{pkg_resources.get_distribution('porcupine').version}\n"
+
+
+def test_main_start():
+    runner = testing.CliRunner()
+    result = runner.invoke(cli.start)
+    assert result.exit_code == 0
