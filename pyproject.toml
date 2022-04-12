@@ -7,7 +7,7 @@ ignore = "E203"
 
 [tool.poetry]
 name = "porcupine"
-version = "0.0.1"
+version = "0.1.0"
 description = "Talos Linux Bootstrapper"
 authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
 license = "Apache-2.0"
@@ -15,14 +15,11 @@ license = "Apache-2.0"
 [tool.poetry.dependencies]
 python = "^3.9"
 click = "^8.1.2"
-Flask = "^2.0.2"
 colorama = "^0.4.4"
 loguru = "^0.6.0"
 gevent = "^21.12.0"
-supermutes = "^0.2.5"
 PyYAML = "^6.0"
 urllib3 = "^1.26.9"
-flasgger = "^0.9.5"
 fastapi = "^0.75.1"
 uvicorn = "^0.17.6"
 pydantic-yaml = "^0.6.3"

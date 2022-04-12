@@ -1,3 +1,4 @@
+api_key: f092f059-053d-4e7e-ad89-b49f6b004584
 defaults:
   boot:
     kernel: "file:///root/vmlinuz-amd64"
