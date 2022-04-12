@@ -57,7 +57,7 @@ def start(**args):
         logging.warning(f"No API_KEY given, new one generated: {cfg.settings.api_key}")
         logging.warning("To avoid this message on start add your `api_key: yourstring` to config.yaml file")
 
-    logging.info(f"Loaded config: {cfg}")
+    logging.debug(f"Loaded config: {cfg}")
 
     server.run()
 
@@ -66,8 +66,6 @@ def sig_handler(signum, stack):
     if signum in [1, 2, 3, 15]:
         logging.warning("Caught signal %s, exiting.", str(signum))
         server.stop()
-    # else:
-    # gin_app.logger.warning('Ignoring signal %s.', str(signum))
     return stack
 
 
