@@ -1,0 +1,25 @@
+defaults:
+  boot:
+    kernel: "file:///root/vmlinuz-amd64"
+    initrd: ["file:///root/initramfs-amd64.xz"]
+    message: "Booting Talos Linux and join the cluster"
+    cmdline: "init_on_alloc=1 slab_nomerge pti=on panic=0 consoleblank=0 printk.devkmsg=on earlyprintk=ttyS0 console=tty0 console=ttyS0 talos.platform=metal"
+  net:
+    dhcp: true
+    server: null
+    gateway: "10.20.20.10"
+    netmask: "255.255.255.0"
+    dns: "10.20.20.10"
+    ntp: "10.20.20.10"
+    ip: null
+    hostname: null
+    device: null
+  deny_unknown_clients: false
+  role: worker
+mapping:
+  aa:bb:cc:dd:ee:ff:
+    net:
+      dhcp: true
+      ip: "10.20.20.60"
+      hostname: "node1"
+      device: "eth0"
