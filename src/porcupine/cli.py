@@ -57,7 +57,7 @@ def start(**args):
         logging.warning(f"No API_KEY given, new one generated: {cfg.settings.api_key}")
         logging.warning("To avoid this message on start add your `api_key: yourstring` to config.yaml file")
 
-    logging.debug(f"Loaded config: {cfg}")
+    logging.info(f"Current config: {cfg}")
 
     server.run()
 

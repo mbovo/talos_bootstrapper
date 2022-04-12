@@ -1,8 +1,9 @@
 import logging
 import threading
-from pydantic import IPvAnyAddress, IPvAnyNetwork, FilePath
+from pydantic import FilePath
 from typing import List, Dict, Optional
 from pydantic_yaml import YamlModel
+from . import common
 
 # Models
 
@@ -16,12 +17,12 @@ class BootSection(YamlModel):
 
 class NetworkSection(YamlModel):
     dhcp: bool
-    server: Optional[IPvAnyAddress]
-    gateway: Optional[IPvAnyAddress]
-    netmask: Optional[IPvAnyNetwork]
-    dns: Optional[IPvAnyAddress]
-    ntp: Optional[IPvAnyAddress]
-    ip: Optional[IPvAnyAddress]
+    server: Optional[str]
+    gateway: Optional[str]
+    netmask: Optional[str]
+    dns: Optional[str]
+    ntp: Optional[str]
+    ip: Optional[str]
     hostname: Optional[str]
     device: Optional[str]
 
@@ -47,6 +48,13 @@ class Settings(YamlModel):
     config_file: Optional[FilePath]
     defaults: Defaults
     mapping: Optional[Dict[str, MacEntry]]
+
+
+class BootResponse(YamlModel):
+    kernel: str
+    initrd: List[str]
+    message: Optional[str]
+    cmdline: Optional[str]
 
 
 # Global config, wraps Settings model
@@ -79,9 +87,13 @@ class Config(object):
         if filename is None:
             return False
         try:
-            with open(filename) as c:
+            with open(filename, "w") as c:
                 self.__lock.acquire()
-                c.write(self.settings.yaml())
+                settings: Settings = self.settings.copy()
+                settings.config_file = None
+                if settings.external_url == common.get_hostname():
+                    settings.external_url = None
+                c.write(settings.yaml(exclude_none=True, exclude_unset=True))
         except Exception as e:
             logging.error(f"error {e}")
             return False
