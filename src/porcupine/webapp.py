@@ -6,6 +6,8 @@ from .config import cfg, MacEntry, Defaults, Settings, BootResponse
 from .logic import parse_mac
 
 app = FastAPI()
+app.title = "porcupine"
+app.description = "Talos Linux bootstrapper"
 logger = logging.getLogger("webapp")
 
 
@@ -15,7 +17,6 @@ def root():
 
 
 @app.get("/health")
-@app.head("/health")
 def health():
     return {"status": "OK"}
 
