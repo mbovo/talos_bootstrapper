@@ -1,53 +1,66 @@
 import signal
-import click
+import typer
 import pkg_resources
 import logging
 import uuid
+from pathlib import Path
+from typing import Optional
 
 from . import server, common
 from .config import cfg
 
 VERSION = pkg_resources.get_distribution("porcupine").version
 
+cli = typer.Typer()
 
-@click.group()
+
 def main():
     common.setup_logging()
     set_sig_handler(sig_handler)
+    cli()
 
 
-@main.command(help="Print version and exit")
+@cli.command(help="Print version and exit")
 def version():
-    click.echo(f"Porcupine - Talos Linux bootstrapper v{VERSION}")
+    typer.echo(f"Porcupine - Talos Linux bootstrapper v{VERSION}")
 
 
-@main.command(help="Start the daemon")
-@click.option(
-    "-c",
-    "--config",
-    "config_file",
-    envvar="CONFIGFILE",
-    required=False,
-    default="config.yaml",
-    type=click.Path(exists=False, dir_okay=False, file_okay=True, readable=True, resolve_path=True, allow_dash=False),
-    help="Yaml config file (config.yaml)",
-)
-@click.option("-l", "--listen", "listen_address", envvar="LISTEN_ADDRESS", default="0.0.0.0", help="Listen address (0.0.0.0)")
-@click.option("-p", "--port", "listen_port", envvar="LISTEN_PORT", default="5000", help="Listen port (5000)")
-@click.option("-e", "--externalurl", "external_url", envvar="EXTERNAL_URL", default=None, help="URL from external standpoint (default: http://IPADDR:PORT)")
-def start(**args):
+@cli.command(help="Start the daemon")
+def start(
+    config_file: Optional[Path] = typer.Option(
+        "config.yaml",
+        "-c",
+        "--config",
+        help="configuration yaml file",
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+        writable=True,
+        resolve_path=True,
+        allow_dash=False,
+    ),
+    listen_address: Optional[str] = typer.Option("0.0.0.0", "--listen", "-l", help="Listen address"),
+    listen_port: Optional[int] = typer.Option(5000, "-p", "--port", help="Listen port"),
+    external_url: Optional[str] = typer.Option(None, "-e", "--external-url", help="URL from external standpoint (like behind a proxy)"),
+    template_dir: Optional[Path] = typer.Option(
+        "./templates", "-t", "--templates", help="Templates path", exists=True, file_okay=False, dir_okay=True, readable=True, resolve_path=True, allow_dash=False
+    ),
+):
 
-    if not cfg.fromFile(args["config_file"]):
+    if not cfg.fromFile(config_file):
         exit(1)
 
     if not cfg.settings.listen_address:
-        cfg.settings.listen_address = args["listen_address"]
+        cfg.settings.listen_address = listen_address
     if not cfg.settings.listen_port:
-        cfg.settings.listen_port = args["listen_port"]
+        cfg.settings.listen_port = listen_port
     if not cfg.settings.config_file:
-        cfg.settings.config_file = args["config_file"]
+        cfg.settings.config_file = config_file
     if not cfg.settings.external_url:
-        cfg.settings.external_url = args["external_url"]
+        cfg.settings.external_url = external_url
+    if not cfg.settings.template_dir:
+        cfg.settings.template_dir = template_dir
 
     if cfg.settings.external_url is None:
         cfg.settings.external_url = f"http://{common.get_hostname()}:{cfg.settings.listen_port}"

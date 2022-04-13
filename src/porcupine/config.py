@@ -46,6 +46,7 @@ class Settings(YamlModel):
     listen_port: Optional[int]
     external_url: Optional[str]
     config_file: Optional[FilePath]
+    template_dir: Optional[FilePath]
     defaults: Defaults
     mapping: Optional[Dict[str, MacEntry]]
 

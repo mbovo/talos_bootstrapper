@@ -1,7 +1,6 @@
 import logging
 from typing import Dict, Optional
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import PlainTextResponse
 from .config import cfg, MacEntry, Defaults, Settings, BootResponse
 from .logic import parse_mac
 
@@ -27,12 +26,6 @@ def bootstrap(macaddress: str):
         return parse_mac(macaddress)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.get("/v1/cluster/{role}", response_class=PlainTextResponse)
-def clusterconfig(role: str):
-    data = "this is a big config file"
-    return data
 
 
 @app.get("/config", response_model=Settings, response_model_exclude_unset=True, response_model_exclude_none=True)
