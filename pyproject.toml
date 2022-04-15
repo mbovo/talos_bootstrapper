@@ -7,7 +7,7 @@ ignore = "E203"
 
 [tool.poetry]
 name = "pixiefairy"
-version = "0.1.0"
+version = "0.1.1"
 description = "Pixiefairy a Pixiecore API companion"
 authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
 license = "Apache-2.0"
