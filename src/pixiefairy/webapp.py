@@ -5,8 +5,8 @@ from .config import cfg, MacEntry, Defaults, Settings, BootResponse
 from .logic import parse_mac
 
 app = FastAPI()
-app.title = "porcupine"
-app.description = "Talos Linux bootstrapper"
+app.title = "pixiefairy"
+app.description = "Pixiecore API Companion"
 logger = logging.getLogger("webapp")
 
 
