@@ -6,9 +6,9 @@ max-line-length = 172
 ignore = "E203"
 
 [tool.poetry]
-name = "porcupine"
+name = "pixiefairy"
 version = "0.1.0"
-description = "Talos Linux Bootstrapper"
+description = "Pixiefairy a Pixiecore API companion"
 authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
 license = "Apache-2.0"
 
@@ -40,4 +40,4 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-porcupine = "porcupine.cli:main"
+pixiefairy = "pixiefairy.cli:main"

@@ -1,4 +1,4 @@
-from porcupine import cli
+from pixiefairy import cli
 from click import testing
 import pkg_resources
 
@@ -16,7 +16,7 @@ def test_main_version():
     runner = testing.CliRunner()
     result = runner.invoke(cli.main, "version")
     assert result.exit_code == 0
-    assert result.stdout == f"Porcupine - Talos Linux bootstrapper v{pkg_resources.get_distribution('porcupine').version}\n"
+    assert result.stdout == f"pixiefairy - Pixiecore API Companion v{pkg_resources.get_distribution('pixiefairy').version}\n"
 
 
 def test_main_start():
