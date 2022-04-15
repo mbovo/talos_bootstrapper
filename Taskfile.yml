@@ -74,7 +74,7 @@ tasks:
   test:
     desc: Run python test and coverage
     cmds:
-      - pytest --cov=porcupine .
+      - pytest --cov=pixifairy .
 
   build:
     desc: "Build python wheel"

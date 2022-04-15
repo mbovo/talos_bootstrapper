@@ -11,6 +11,8 @@ version = "0.1.0"
 description = "Pixiefairy a Pixiecore API companion"
 authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
 license = "Apache-2.0"
+repository = "https://github.com/mbovo/pixiefairy"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
