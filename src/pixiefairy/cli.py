@@ -82,7 +82,7 @@ def sig_handler(signum, stack):
     return stack
 
 
-def set_sig_handler(funcname, avoid=["SIG_DFL", "SIGSTOP", "SIGKILL"]):
+def set_sig_handler(funcname, avoid=["SIG_DFL", "SIGSTOP", "SIGKILL", "SIG_BLOCK"]):
     for i in [x for x in dir(signal) if x.startswith("SIG") and x not in avoid]:
         try:
             signum = getattr(signal, i)
