@@ -5,5 +5,6 @@ dist/*
 *.egg-info
 .coverage
 *__pycache__
+*.ruff_cache
 .task/*
 old/
