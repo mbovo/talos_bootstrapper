@@ -2,8 +2,8 @@
 
 version: '3'
 
-#includes:
-#  docker: containers/Taskfile.yml
+includes:
+  docker: containers/Taskfile.yml
 
 tasks:
   default:
@@ -24,7 +24,6 @@ tasks:
     generates:
       - .venv/bin/activate
     method: checksum
-
 
   pre-commit:
     cmds:
@@ -62,8 +61,8 @@ tasks:
   setup:
     desc: Bootstrap dev environment
     preconditions:
-      - sh: "[ $(python3 --version | cut -d ' ' -f 2 | awk -F'.' '{print ($2 > 9) }') = 1 ]"
-        msg: "Required python version not found (>=3.10)"
+      - sh: "[ $(python3 --version | cut -d ' ' -f 2 | awk -F'.' '{print ($2 >= 8) }') = 1 ]"
+        msg: "Required python version not found (>=3.8)"
     cmds:
       - task: pre-commit-setup
       - task: poetry-setup
@@ -74,7 +73,7 @@ tasks:
   test:
     desc: Run python test and coverage
     cmds:
-      - pytest --cov=pixifairy .
+      - pytest --cov=pdh .
 
   build:
     desc: "Build python wheel"
@@ -87,16 +86,6 @@ tasks:
       - poetry publish -u $PYPI_USERNAME -p $PYPI_TOKEN
     deps:
       - build
-
-#  certs:
-#    desc: Make new SSL certs
-#    cmds:
-#      - ./scripts/makecerts.sh
-
-#  clean-certs:
-#    desc: Cleanup old SSL certs
-#    cmds:
-#      - rm -rf ./keys/*.pem ./keys/*.csr
 
   clean:
     desc: Cleanup
