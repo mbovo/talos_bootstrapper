@@ -8,14 +8,14 @@ ignore = "E203"
 [tool.poetry]
 name = "pixiefairy"
 version = "0.1.2"
-description = "Pixiefairy a Pixiecore API companion"
+description = "Pixiefairy a Pixiecore API server companion"
 authors = ["Manuel Bovo <manuel.bovo@gmail.com>"]
 license = "Apache-2.0"
 repository = "https://github.com/mbovo/pixiefairy"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 click = "^8.1.2"
 colorama = "^0.4.4"
 loguru = "^0.6.0"

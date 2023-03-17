@@ -3,10 +3,10 @@
 [![](https://img.shields.io/pypi/v/pixiecore.svg)](https://pypi.org/pypi/pixiefairy)
 [![Tag and build](https://github.com/mbovo/pixiefairy/actions/workflows/build-image.yml/badge.svg)](https://github.com/mbovo/pixiefairy/actions/workflows/build-image.yml)
 
-Pixiefairy is a companion for [pixiecore](https://github.com/danderson/netboot/tree/master/pixiecore) tool to manage network booting of machines.
-Pixiecore in [API mode](https://github.com/danderson/netboot/tree/master/pixiecore#pixiecore-in-api-mode) send a request to an external service for each pxe booting event; *pixiefairy* is that service, answering to api call and serving the required info, like the kernel, the initrd and the command line to boot.
+`Pixiefairy` is a companion for [pixiecore](https://github.com/danderson/netboot/tree/master/pixiecore) a tool to manage network booting of machines.
+`Pixiecore` in [API mode](https://github.com/danderson/netboot/tree/master/pixiecore#pixiecore-in-api-mode) send a request to an external service for each pxe booting event; *pixiefairy* is that service, answering to api calls and serving the configured info, like the kernel, the initrd and the command line to boot.
 
-Pixiefairy is higly configurable, it decide which mac-address to boot and wich set of parameters serve.
+`Pixiefairy` is higly configurable, you can decide which mac-address and which set of parameters to serve to each client.
 
 ## Installation
 
