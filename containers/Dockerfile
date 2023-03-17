@@ -17,6 +17,7 @@ RUN groupadd --gid 1000 user && useradd --uid 1000 --gid 1000 -m user
 WORKDIR /app
 # COPY --from=builder /app/dist/*.whl /app
 COPY ./dist/*.whl /app
+COPY examples/config.yaml /app/config.yaml
 RUN apt-get update && apt-get install -y gcc
 RUN pip install --no-cache-dir /app/pixiefairy-*.whl>=0.1.0
 USER user
