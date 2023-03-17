@@ -16,9 +16,9 @@ line-length = 172
 # Allow unused variables when underscore-prefixed.
 ignore = [
     "E501",
-    "C408", # Unnecessary dict call - rewrite as a literal.
-    "C901", # Function is too complex
-    "C416", # Unnecessary list comprehension
+   "C408", # Unnecessary dict call - rewrite as a literal.
+   "C901", # Function is too complex
+   "C416", # Unnecessary list comprehension
 ]
 
 

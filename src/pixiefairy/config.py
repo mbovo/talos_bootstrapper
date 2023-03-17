@@ -63,14 +63,14 @@ class BootResponse(YamlModel):
 
 class Config(object):
     settings: Settings
-    cache: dict()
+    cache: {}
     __lock: threading.Lock
 
     def __init__(self) -> None:
         self.settings: Settings = Settings(
             defaults=Defaults(boot=BootSection(kernel="", initrd=[""]), net=NetworkSection(dhcp=True), deny_unknown_clients=False, role="worker"), mapping={}
         )
-        self.cache = dict()
+        self.cache = {}
         self.__lock = threading.Lock()
 
     def fromFile(self, filename: str) -> bool:
